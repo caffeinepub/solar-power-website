@@ -1,0 +1,55 @@
+{
+  "kind": "build_request",
+  "title": "Fix Internet Identity login not working",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add/repair the shared frontend config module imported by the authentication and actor hooks so Internet Identity login can initialize reliably in production.\n\nContext: `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts` both import `../config` (from within `frontend/src/hooks`), but the repository file list does not contain a resolvable `frontend/src/config.ts`/`frontend/src/config/index.ts` module. This can prevent AuthClient initialization and/or actor creation, resulting in users being unable to log in.\n\nDeliverable: Ensure a `frontend/src/config.ts` module exists and exports the functions expected by the hooks:\n- `loadConfig()` that returns at least `{ ii_derivation_origin: string }`.\n- `createActorWithConfig(...)` used by `useActor` to create the backend actor.\n\nThe config must include safe defaults for Internet Identity so `AuthClient.login({ identityProvider: process.env.II_URL })` does not receive an undefined/invalid URL at runtime.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Nhi me login nhi ho pa raha hu"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A `frontend/src/config.ts` file exists and is used by the app build (the imports in `useInternetIdentity.ts` and `useActor.ts` resolve without bundler/runtime errors).",
+        "Clicking the Admin login button successfully opens the Internet Identity flow (no console error about missing config or invalid/undefined identity provider).",
+        "After completing Internet Identity authentication, the app receives a non-anonymous principal and `identity` is set (Admin page no longer shows the unauthenticated login prompt)."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add clear, user-visible error handling for failed Internet Identity login attempts on the Admin login screen.\n\nImplementation must not modify immutable hook files (`frontend/src/hooks/useInternetIdentity.ts` / `useActor.ts`), but should:\n- Surface `loginError` (from `useInternetIdentity()`) in the AdminDashboard UI.\n- Provide a Retry action that calls the existing `login()` function again.\n- Use English for any new user-facing error text added as part of this change (e.g., \"Login failed. Please try again.\").",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Nhi me login nhi ho pa raha hu"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When Internet Identity login fails, the Admin login screen shows an English error message derived from `loginError` (or a safe fallback).",
+        "A visible Retry control is present and triggers another login attempt without requiring a full page reload.",
+        "No changes are made to immutable paths listed in SYSTEM_CONTEXT (especially `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts`)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files under frontend immutablePaths (notably `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts`).",
+    "Backend must remain single-actor; do not introduce additional backend services/canisters."
+  ],
+  "nonGoals": [
+    "Adding non-Internet-Identity authentication methods (email/password, OAuth, etc.).",
+    "Implementing new admin features beyond restoring login and showing login errors."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

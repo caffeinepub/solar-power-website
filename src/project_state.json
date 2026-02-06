@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [
+    "User reports they cannot log in (login not working)."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-add-repair-the-shared-frontend-config-module-imported-by-the-authentication-and-actor-hooks-so-internet-identity-login-can-initialize-reliably-in-production-context-frontend-src-hooks-useinternetidentity-ts-and-frontend-src-hooks-useactor-ts-both-import-config-from-within-frontend-src-hooks-but-the-repository-file-list-does-not-contain-a-resolvable-frontend-src-config-ts-frontend-src-config-index-ts-module-this-can-prevent-authclient-initialization-and-or-actor-creation-resulting-in-users-being-unable-to-log-in-deliverable-ensure-a-frontend-src-config-ts-module-exists-and-exports-the-functions-expected-by-the-hooks-loadconfig-that-returns-at-least-ii-derivation-origin-string-createactorwithconfig-used-by-useactor-to-create-the-backend-actor-the-config-must-include-safe-defaults-for-internet-identity-so-authclient-login-identityprovider-process-env-ii-url-does-not-receive-an-undefined-invalid-url-at-runtime",
+      "title": "Add/repair the shared frontend config module imported by the authentication and actor hooks so Internet Identity login can initialize reliably in production.\n\nContext: `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts` both import `../config` (from within `frontend/src/hooks`), but the repository file list does not contain a resolvable `frontend/src/config.ts`/`frontend/src/config/index.ts` module. This can prevent AuthClient initialization and/or actor creation, resulting in users being unable to log in.\n\nDeliverable: Ensure a `frontend/src/config.ts` module exists and exports the functions expected by the hooks:\n- `loadConfig()` that returns at least `{ ii_derivation_origin: string }`.\n- `createActorWithConfig(...)` used by `useActor` to create the backend actor.\n\nThe config must include safe defaults for Internet Identity so `AuthClient.login({ identityProvider: process.env.II_URL })` does not receive an undefined/invalid URL at runtime.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-clear-user-visible-error-handling-for-failed-internet-identity-login-attempts-on-the-admin-login-screen-implementation-must-not-modify-immutable-hook-files-frontend-src-hooks-useinternetidentity-ts-useactor-ts-but-should-surface-loginerror-from-useinternetidentity-in-the-admindashboard-ui-provide-a-retry-action-that-calls-the-existing-login-function-again-use-english-for-any-new-user-facing-error-text-added-as-part-of-this-change-e-g-login-failed-please-try-again",
+      "title": "Add clear, user-visible error handling for failed Internet Identity login attempts on the Admin login screen.\n\nImplementation must not modify immutable hook files (`frontend/src/hooks/useInternetIdentity.ts` / `useActor.ts`), but should:\n- Surface `loginError` (from `useInternetIdentity()`) in the AdminDashboard UI.\n- Provide a Retry action that calls the existing `login()` function again.\n- Use English for any new user-facing error text added as part of this change (e.g., \"Login failed. Please try again.\").",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [],
+  "projectName": "Fix Internet Identity login not working",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

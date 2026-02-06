@@ -1,0 +1,58 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T04:01:45.845Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Add/repair the shared frontend config module imported by the authentication and actor hooks so Internet Identity login can initialize reliably in production.\n\nContext: `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts` both import `../config` (from within `frontend/src/hooks`), but the repository file list does not contain a resolvable `frontend/src/config.ts`/`frontend/src/config/index.ts` module. This can prevent AuthClient initialization and/or actor creation, resulting in users being unable to log in.\n\nDeliverable: Ensure a `frontend/src/config.ts` module exists and exports the functions expected by the hooks:\n- `loadConfig()` that returns at least `{ ii_derivation_origin: string }`.\n- `createActorWithConfig(...)` used by `useActor` to create the backend actor.\n\nThe config must include safe defaults for Internet Identity so `AuthClient.login({ identityProvider: process.env.II_URL })` does not receive an undefined/invalid URL at runtime.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/config.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/config.ts"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add clear, user-visible error handling for failed Internet Identity login attempts on the Admin login screen.\n\nImplementation must not modify immutable hook files (`frontend/src/hooks/useInternetIdentity.ts` / `useActor.ts`), but should:\n- Surface `loginError` (from `useInternetIdentity()`) in the AdminDashboard UI.\n- Provide a Retry action that calls the existing `login()` function again.\n- Use English for any new user-facing error text added as part of this change (e.g., \"Login failed. Please try again.\").",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AdminDashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AdminDashboard.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/frontend/canister.yaml",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/config.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/pages/AdminDashboard.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

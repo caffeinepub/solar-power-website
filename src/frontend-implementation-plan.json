@@ -1,0 +1,39 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Repair missing frontend config module for reliable Internet Identity login",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Create the missing shared frontend config module used by Internet Identity and actor hooks, including safe defaults so II login/actor creation work reliably in production.",
+      "acceptanceCriteria": [
+        "A `frontend/src/config.ts` file exists and is used by the app build (the imports in `useInternetIdentity.ts` and `useActor.ts` resolve without bundler/runtime errors).",
+        "Clicking the Admin login button successfully opens the Internet Identity flow (no console error about missing config or invalid/undefined identity provider).",
+        "After completing Internet Identity authentication, the app receives a non-anonymous principal and `identity` is set (Admin page no longer shows the unauthenticated login prompt)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/config.ts",
+          "operation": "create",
+          "description": "Add a shared config module exporting `loadConfig()` (returning at least `{ ii_derivation_origin: string }`) and `createActorWithConfig(...)` for actor creation used by `useActor`. Ensure the module establishes safe runtime defaults for Internet Identity (including a fallback for `process.env.II_URL` if absent) so `AuthClient.login({ identityProvider: process.env.II_URL })` is never called with undefined/invalid values. Use the selected `core-infrastructure` component (backend connection configuration / actor creation helpers) if applicable, and verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Show clear user-visible Internet Identity login errors on the Admin login screen and provide a Retry action without modifying immutable hooks.",
+      "acceptanceCriteria": [
+        "When Internet Identity login fails, the Admin login screen shows an English error message derived from `loginError` (or a safe fallback).",
+        "A visible Retry control is present and triggers another login attempt without requiring a full page reload.",
+        "No changes are made to immutable paths listed in SYSTEM_CONTEXT (especially `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts`)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AdminDashboard.tsx",
+          "operation": "modify",
+          "description": "Update the unauthenticated Admin login UI to read `loginError` from `useInternetIdentity()` and render a user-visible English error message (fallback to a safe generic string if needed). Add a visible Retry control that calls the existing `login()` flow again (reusing the current login handler), without editing immutable hook files. Use existing `shadcn-ui` components (e.g., Alert/Button) for consistent UI, and verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

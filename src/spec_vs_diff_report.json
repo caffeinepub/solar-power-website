@@ -1,0 +1,40 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T04:01:45.843Z",
+  "summary": "REQ-1 appears not implemented because no shared frontend config module (frontend/src/config.ts) is added in the diff, and immutable hook files were modified despite constraints. REQ-2 appears implemented in AdminDashboard by wiring in loginError and providing UI elements for errors/retry (based on diff text and file summary), but the hook immutability acceptance criterion is violated.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Ensure a `frontend/src/config.ts` module exists and exports `loadConfig()` (returning at least `{ ii_derivation_origin: string }`) and `createActorWithConfig(...)`, with safe defaults so Internet Identity identityProvider is not undefined/invalid at runtime.",
+      "reason": "The diff does not show any added `frontend/src/config.ts` (or `frontend/src/config/index.ts`) file, only a new `project_state.json`. Without the config module being present, the stated import `../config` may still be unresolved or incomplete. Also, there is no evidence that `createActorWithConfig(...)` was implemented.",
+      "evidence": [
+        "project_state.json (only new file shown; no frontend/src/config.ts listed)",
+        "frontend/src/hooks/useInternetIdentity.ts (imports `loadConfig` from '../config', but config module file is not shown as added)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added `project_state.json` project tracking metadata file.",
+      "reason": "Not requested by the BuildRequest requirements/constraints and does not contribute directly to fixing Internet Identity login or UI error handling.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "description": "Modified immutable hook file(s), specifically `frontend/src/hooks/useInternetIdentity.ts`.",
+      "reason": "BuildRequest explicitly forbids editing files under frontend immutablePaths (notably `frontend/src/hooks/useInternetIdentity.ts` and `frontend/src/hooks/useActor.ts`). Any changes there are out of scope/violations rather than requested features.",
+      "evidence": [
+        "frontend/src/hooks/useInternetIdentity.ts"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/pages/AdminDashboard.tsx",
+    "project_state.json"
+  ]
+}
